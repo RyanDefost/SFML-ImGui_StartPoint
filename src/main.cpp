@@ -2,6 +2,11 @@
 #include "imgui-SFML.h"
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
+#include "Profiler.hpp"
+#include "Balls.hpp"
+
+Profiler profiler;
 
 int main() {
     sf::RenderWindow window;
@@ -12,7 +17,9 @@ int main() {
     if (!ImGui::SFML::Init(window))
         return -1;
 
+    BallGame ballgame;
     sf::Clock deltaClock;
+    bool toggleTest = false;
     while (window.isOpen())
     {
         // Event Polling
@@ -26,16 +33,26 @@ int main() {
         }
 
         // Update
+        {
+            PROFILE(profiler, "Update Balls");
+            ballgame.NewUpdateBalls({ 500,720 }, deltaClock.getElapsedTime().asSeconds());
+        }
+
         ImGui::SFML::Update(window, deltaClock.restart());
-        // ImGui::ShowDemoWindow();
+
+
+        profiler.renderImGui();
+
+        //ImGui::ShowDemoWindow();
 
         // Render
         window.clear();
 
         ImGui::SFML::Render(window);
+        ballgame.drawBalls(window);
 
         window.display();
     }
 
-	return 0;
-}
+    return 0;
+};

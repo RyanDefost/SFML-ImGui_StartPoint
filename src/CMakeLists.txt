@@ -1,6 +1,6 @@
 add_executable(low-level_setup
  main.cpp
-)
+ "Profiler.hpp" )
 
 target_link_libraries(low-level_setup
  PUBLIC

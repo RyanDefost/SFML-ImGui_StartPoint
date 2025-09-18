@@ -1,2 +1,3 @@
 # Ignore all files in any directory named build
+.vs/
 build/
