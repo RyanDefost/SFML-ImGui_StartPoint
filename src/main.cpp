@@ -3,8 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "Conways.hpp"
 #include "Profiler.hpp"
-#include "Balls.hpp"
 
 Profiler profiler;
 
@@ -17,7 +17,7 @@ int main() {
     if (!ImGui::SFML::Init(window))
         return -1;
 
-    BallGame ballgame;
+    Conways conways;
     sf::Clock deltaClock;
     bool toggleTest = false;
     while (window.isOpen())
@@ -34,8 +34,8 @@ int main() {
 
         // Update
         {
-            PROFILE(profiler, "Update Balls");
-            ballgame.NewUpdateBalls({ 500,720 }, deltaClock.getElapsedTime().asSeconds());
+            PROFILE(profiler, "Update Conways");
+            conways.DisplayCells();
         }
 
         ImGui::SFML::Update(window, deltaClock.restart());
@@ -49,8 +49,7 @@ int main() {
         window.clear();
 
         ImGui::SFML::Render(window);
-        ballgame.drawBalls(window);
-
+        
         window.display();
     }
 
