@@ -35,7 +35,7 @@ int main() {
         // Update
         {
             PROFILE(profiler, "Update Conways");
-            conways.DisplayCells();
+            conways.DisplayCells(window);
         }
 
         ImGui::SFML::Update(window, deltaClock.restart());

@@ -16,6 +16,7 @@
 /// 
 /// 
 /// </summary>
+/// 
 class Conways {
 public:
 
@@ -24,6 +25,34 @@ public:
 
 	void DisplayCells(sf::RenderWindow& window);
 
+	struct Cell
+	{
+		sf::RectangleShape shape;
+		sf::Vector2f position;
+
+		Cell(float x, float y) {
+			position = { x,y };
+		}
+
+		bool operator==(const Cell& other) {
+			return (position == other.position);
+		}
+	};
+	
+	struct pair_hash {
+		template <class T1, class T2>
+		std::size_t operator () (const std::pair<T1, T2>& p) const {
+			auto h1 = std::hash<T1>{}(p.first);
+			auto h2 = std::hash<T2>{}(p.second);
+
+			// Mainly for demonstration purposes, i.e. works but is overly simple
+			// In the real world, use sth. like boost.hash_combine
+			return h1 ^ h2;
+		}
+	};
+
+	std::unordered_map<std::pair<int, int>, Cell> cells = {};
+
 private:
-	std::unordered_map<std::pair<int, int>, Cell> cells;
+
 };
