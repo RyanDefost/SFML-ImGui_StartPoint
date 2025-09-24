@@ -32,24 +32,24 @@ int main() {
                 window.close();
         }
 
-        // Update
-        {
-            PROFILE(profiler, "Update Conways");
-            conways.DisplayCells(window);
-        }
-
         ImGui::SFML::Update(window, deltaClock.restart());
 
-
-        profiler.renderImGui();
-
-        //ImGui::ShowDemoWindow();
+        //if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+        {
+            //PROFILE(profiler, "Display Conways");
+            conways.UpdateCells(window);
+        }
 
         // Render
         window.clear();
-
-        ImGui::SFML::Render(window);
         
+        profiler.renderImGui();
+        {
+            PROFILE(profiler, "Render Conways");
+            conways.DisplayCells(window);
+        }
+        ImGui::SFML::Render(window);
+
         window.display();
     }
 

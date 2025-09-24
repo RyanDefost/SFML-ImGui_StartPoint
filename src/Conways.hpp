@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <random>
+#include <ranges>
 
 /// <summary>
 /// Instantiate set amount of cells
@@ -16,43 +17,67 @@
 /// 
 /// 
 /// </summary>
-/// 
+
+template <>
+struct std::hash<std::pair<int, int>> // jogojapan : https://stackoverflow.com/questions/17016175/c-unordered-map-using-a-custom-class-type-as-the-key
+{
+	std::size_t operator()(const std::pair<int, int>& k) const
+	{
+		using std::size_t;
+		using std::hash;
+
+		// Compute individual hash values for first,
+		// second and third and combine them using XOR
+		// and bit shifting:
+
+		return (hash<int>()(k.first)
+			^ (hash<int>()(k.second)));
+	}
+};
+
 class Conways {
 public:
+	int GameSize = 2;
 
 	Conways();
 	~Conways();
+
+	void GetNeighbours();
+
+	void UpdateCells(sf::RenderWindow& window);
 
 	void DisplayCells(sf::RenderWindow& window);
 
 	struct Cell
 	{
 		sf::RectangleShape shape;
-		sf::Vector2f position;
+		std::vector<std::pair<int,int>> neighbours = {};
 
-		Cell(float x, float y) {
-			position = { x,y };
+		bool isActive;
+		bool previouseActive;
+
+		Cell(float x, float y, sf::Vector2f size, sf::Color color) {
+			shape.setSize(size);
+			shape.setFillColor(color);
+			shape.setPosition(sf::Vector2f(x, y));
+			
+			isActive = false;
+			previouseActive = !isActive;
 		}
 
-		bool operator==(const Cell& other) {
-			return (position == other.position);
-		}
-	};
-	
-	struct pair_hash {
-		template <class T1, class T2>
-		std::size_t operator () (const std::pair<T1, T2>& p) const {
-			auto h1 = std::hash<T1>{}(p.first);
-			auto h2 = std::hash<T2>{}(p.second);
-
-			// Mainly for demonstration purposes, i.e. works but is overly simple
-			// In the real world, use sth. like boost.hash_combine
-			return h1 ^ h2;
+		operator bool() const
+		{
+			return isActive;
 		}
 	};
 
 	std::unordered_map<std::pair<int, int>, Cell> cells = {};
-
 private:
 
+	int gs = GameSize;
+	std::vector<std::pair<int, int>> diractions = {
+		{0, gs}, {gs, 0}, {0, -gs},
+		{-gs, 0}, {gs, gs}, {-gs, -gs},
+		{gs, -gs}, {-gs, gs}
+	};
 };
