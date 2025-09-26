@@ -35,7 +35,7 @@ int main() {
         // Update
         {
             PROFILE(profiler, "Update Balls");
-            ballgame.NewUpdateBalls({ 500,720 }, deltaClock.getElapsedTime().asSeconds());
+            ballgame.UpdateBalls({ 500,720 }, deltaClock.getElapsedTime().asSeconds());
         }
 
         ImGui::SFML::Update(window, deltaClock.restart());
@@ -49,7 +49,7 @@ int main() {
         window.clear();
 
         ImGui::SFML::Render(window);
-        ballgame.drawBalls(window);
+        ballgame.DrawBalls(window);
 
         window.display();
     }
