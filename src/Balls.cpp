@@ -143,6 +143,11 @@ void BallGame::ReAssignBall(Ball& ball){
 
 	//Update it's current grid position
 	ball.position = { ball.shape.getPosition().x, ball.shape.getPosition().y };
+	ball.gridPosition = {
+		std::floor(ball.position.first / gridSize),
+		std::floor(ball.position.second / gridSize),
+	};
+
 
 	auto findit = grid_m.find(ball.gridPosition);
 	if (findit != grid_m.end()) {
