@@ -47,107 +47,109 @@ void BallGame::UpdateBalls(const sf::Vector2u& windowSize, float deltaTime) {
 
 	// Handle ball-to-ball collisions
 	for (auto& ball : balls_m) {
-		auto currentCell = grid_m.at(ball.gridPosition);
+		
+		HandleBallCollision(ball);
+		HandleWallCollision(ball, windowSize);
 
-		for (auto& otherBall : currentCell) {
-			Ball& ball1 = ball;
-			Ball& ball2 = otherBall;
+		ReAssignBall(ball);
+	}
+}
 
-			if (ball1 == ball2) continue;
+void BallGame::HandleBallCollision(Ball& cball) {
+	auto currentCell = grid_m.at(cball.gridPosition);
 
-			sf::Vector2f pos1 = ball1.shape.getPosition();
-			sf::Vector2f pos2 = ball2.shape.getPosition();
+	for (auto& oBall : currentCell) {
+		if (cball == oBall) continue;
 
-			float radius1 = ball1.shape.getRadius();
-			float radius2 = ball2.shape.getRadius();
+		sf::Vector2f pos1 = cball.shape.getPosition();
+		sf::Vector2f pos2 = oBall.shape.getPosition();
 
-			// Calculate distance between centers
-			sf::Vector2f delta =    pos2 - pos1;
-			float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
-			float minDistance = radius1 + radius2;
+		float radius1 = cball.shape.getRadius();
+		float radius2 = oBall.shape.getRadius();
 
-			if (distance < minDistance && distance > 0) {
-				// Normalize collision vector
-				sf::Vector2f normal = delta / distance;
+		// Calculate distance between centers
+		sf::Vector2f delta = pos2 - pos1;
+		float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+		float minDistance = radius1 + radius2;
 
-				// Separate balls to prevent overlap
-				float overlap = minDistance - distance;
-				sf::Vector2f separation = normal * (overlap * 0.5f);
+		if (distance > minDistance || distance < 0) continue;
 
-				ball1.shape.setPosition(pos1 - separation);
-				ball2.shape.setPosition(pos2 + separation);
+		// Normalize collision vector
+		sf::Vector2f normal = delta / distance;
 
-				// Calculate relative velocity
-				sf::Vector2f relativeVel = ball2.velocity - ball1.velocity;
-				float velAlongNormal = relativeVel.x * normal.x + relativeVel.y * normal.y;
+		// Separate balls to prevent overlap
+		float overlap = minDistance - distance;
+		sf::Vector2f separation = normal * (overlap * 0.5f);
 
-				// Don't resolve if velocities are separating
-				if (velAlongNormal > 0) continue;
+		cball.shape.setPosition(pos1 - separation);
+		oBall.shape.setPosition(pos2 + separation);
 
-				// Apply collision response (elastic collision)
-				float restitution = 0.0f; // Bounce factor (0 = no bounce, 1 = perfect bounce)
-				float impulse = -(1 + restitution) * velAlongNormal;
+		// Calculate relative velocity
+		sf::Vector2f relativeVel = oBall.velocity - cball.velocity;
+		float velAlongNormal = relativeVel.x * normal.x + relativeVel.y * normal.y;
 
-				// Assume equal mass for simplicity
-				sf::Vector2f impulseVector = impulse * normal;
+		// Don't resolve if velocities are separating
+		if (velAlongNormal > 0) continue;
 
-				ball1.velocity -= impulseVector;
-				ball2.velocity += impulseVector;
-			}
-		}
+		// Apply collision response (elastic collision)
+		float restitution = 0.0f; // Bounce factor (0 = no bounce, 1 = perfect bounce)
+		float impulse = -(1 + restitution) * velAlongNormal;
 
-		grid_m.at(ball.gridPosition).erase(remove(
-			grid_m.at(ball.gridPosition).begin(),
-			grid_m.at(ball.gridPosition).end(), ball),
-			grid_m.at(ball.gridPosition).end()
-		);
+		// Assume equal mass for simplicity
+		sf::Vector2f impulseVector = impulse * normal;
 
-		//Update it's current grid position
-		ball.position = { ball.shape.getPosition().x, ball.shape.getPosition().y };
-		ball.gridPosition = {
-			std::floor(ball.position.first / gridSize),
-			std::floor(ball.position.second / gridSize)
-		};
+		cball.velocity -= impulseVector;
+		oBall.velocity += impulseVector;
+	}
+}
 
-		auto findit = grid_m.find(ball.gridPosition);
-		if (findit != grid_m.end()) {
-			grid_m.at(ball.gridPosition).emplace_back(ball);
+void BallGame::HandleWallCollision(Ball& ball, const sf::Vector2u& windowSize) {
+	sf::Vector2f pos = ball.shape.getPosition();
+	float radius = ball.shape.getRadius();
+
+	// Bounce off walls
+	if (pos.x - radius <= 0 || pos.x + radius >= windowSize.x) {
+		ball.velocity.x = -ball.velocity.x;
+
+		// Clamp position to prevent sticking
+		if (pos.x - radius <= 0) {
+			ball.shape.setPosition(sf::Vector2f(radius, pos.y));
 		}
 		else {
-			grid_m.insert({ ball.gridPosition, {ball} });
+			ball.shape.setPosition(sf::Vector2f(windowSize.x - radius, pos.y));
 		}
 	}
 
-	// Handle wall collisions
-	for (auto& ball : balls_m) {
-		sf::Vector2f pos = ball.shape.getPosition();
-		float radius = ball.shape.getRadius();
+	if (pos.y - radius <= 0 || pos.y + radius >= windowSize.y) {
+		ball.velocity.y = -ball.velocity.y;
 
-		// Bounce off walls
-		if (pos.x - radius <= 0 || pos.x + radius >= windowSize.x) {
-			ball.velocity.x = -ball.velocity.x;
-
-			// Clamp position to prevent sticking
-			if (pos.x - radius <= 0) {
-				ball.shape.setPosition(sf::Vector2f(radius, pos.y));
-			}
-			else {
-				ball.shape.setPosition(sf::Vector2f(windowSize.x - radius, pos.y));
-			}
+		// Clamp position to prevent sticking
+		if (pos.y - radius <= 0) {
+			ball.shape.setPosition(sf::Vector2f(pos.x, radius));
 		}
-
-		if (pos.y - radius <= 0 || pos.y + radius >= windowSize.y) {
-			ball.velocity.y = -ball.velocity.y;
-
-			// Clamp position to prevent sticking
-			if (pos.y - radius <= 0) {
-				ball.shape.setPosition(sf::Vector2f(pos.x, radius));
-			}
-			else {
-				ball.shape.setPosition(sf::Vector2f(pos.x, windowSize.y -
-					radius));
-			}
+		else {
+			ball.shape.setPosition(sf::Vector2f(pos.x, windowSize.y -
+				radius));
 		}
+	}
+}
+
+void BallGame::ReAssignBall(Ball& ball){
+
+	auto& gridBalls = grid_m.at(ball.gridPosition);
+	gridBalls.erase(
+		remove( gridBalls.begin(), gridBalls.end(), ball), gridBalls.end()
+	);
+
+	//Update it's current grid position
+	ball.position = { ball.shape.getPosition().x, ball.shape.getPosition().y };
+
+	auto findit = grid_m.find(ball.gridPosition);
+	if (findit != grid_m.end()) {
+		grid_m.at(ball.gridPosition).emplace_back(ball);
+	}
+	else {
+		grid_m.insert({ ball.gridPosition, {ball} });
 	}
 }
 

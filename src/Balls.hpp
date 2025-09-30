@@ -25,8 +25,8 @@ struct Ball {
 		velocity = sf::Vector2f(vx, vy);
 
 		gridPosition = {
-			std::floor(x / 25),
-			std::floor(y / 25)
+			std::floor(x / 8),
+			std::floor(y / 8)
 		};
 
 		position = { x,y };
@@ -54,7 +54,7 @@ struct pair_hash {
 
 class BallGame {
 private:
-	int gridSize = 25;
+	int gridSize = 8;
 
 	// Create balls
 	std::vector<Ball> balls;
@@ -73,11 +73,17 @@ private:
 	
 
 public:
+
 	BallGame();
 	
 	~BallGame();
 
 	void UpdateBalls(const sf::Vector2u& windowSize, float deltaTime);
 	
+	void HandleBallCollision(Ball& ball);
+	void HandleWallCollision(Ball& ball, const sf::Vector2u& windowSize);
+
+	void ReAssignBall(Ball& ball);
+
 	void DrawBalls(sf::RenderWindow& window) const;
 };

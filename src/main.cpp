@@ -3,8 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "Profiler.hpp"
 #include "Balls.hpp"
+#include "Profiler.hpp"
 
 Profiler profiler;
 
