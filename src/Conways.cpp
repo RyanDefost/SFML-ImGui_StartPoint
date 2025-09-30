@@ -7,20 +7,26 @@
 
 Conways::Conways()
 {
+	sf::VertexArray point(sf::PrimitiveType::Points, 1);
+	point[0].position = { 0,0 };
+	point[0].color = sf::Color::White;
+	visual = point;
+
 	std::random_device rd;  // Will be used to obtain a seed for the random number engine
 	std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<float> random;
 
-	cells.reserve(200 * 200);
+	cells.reserve(500 * 500);
+	grid.reserve(500 * 500);
 
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < 500; i++)
 	{
-		for (size_t j = 0; j < 200; j++)
+		for (size_t j = 0; j < 500; j++)
 		{
-			random = std::uniform_real_distribution<float>(0, 100);
-
-			//PLEASE FIX THIS UGLY WORK AROUND
-			std::pair<int, int> position = { (int)i * GameSize, (int)j * GameSize };
+			std::pair<int, int> position = {
+				(int)i * GameSize, (int)j * GameSize 
+			};
+			
 			Cell currentCell = Cell(
 				position.first,
 				position.second,
@@ -28,7 +34,8 @@ Conways::Conways()
 				sf::Color::White
 			);
 
-			if (random(gen) <= 40) {
+			random = std::uniform_real_distribution<float>(0, 2);
+			if (random(gen) < 1) {
 				currentCell.isActive = true;
 				currentCell.previouseActive = false;
 			}
@@ -54,7 +61,11 @@ void Conways::GetNeighbours()
 	for (auto& cell : cells) {
 
 		for (auto& diraction : diractions) {
-			std::pair<int, int> currentDir = { cell.shape.getPosition().x + diraction.first, cell.shape.getPosition().y + diraction.second};
+			
+			std::pair<int, int> currentDir = {
+				cell.position.x + diraction.first, 
+				cell.position.y + diraction.second
+			};
 
 			if (grid.find(currentDir) == grid.end()) continue;
 
@@ -68,16 +79,20 @@ void Conways::UpdateCells(sf::RenderWindow& window)
 	for (auto& cell : cells) {
 
 		auto count = 0;
-		std::for_each(cell.neighbours.begin(), cell.neighbours.end(), [&count](Cell* c) {
-			if (c->previouseActive) count++;
-		});
+		for (auto& neighbour : cell.neighbours) {
+			if (neighbour->previouseActive) count++;
+
+			if (count > 3) {
+				cell.isActive = false;
+				continue;
+			}
+		}
 
 		if (!cell.previouseActive && count == 3) {
 			cell.isActive = true;
 			continue;
 		}
-
-		if (count < 2 || count > 3) {
+		else if (count < 2) {
 			cell.isActive = false;
 			continue;
 		}
@@ -90,6 +105,8 @@ void Conways::DisplayCells(sf::RenderWindow& window)
 		cell.previouseActive = cell.isActive;
 		
 		if (!cell) continue;
-		window.draw(cell.shape);
+
+		visual[0].position = cell.position;
+		window.draw(visual);
 	}
 }

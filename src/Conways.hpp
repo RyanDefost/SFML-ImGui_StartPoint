@@ -26,7 +26,7 @@ struct pair_hash {
 
 class Conways {
 public:
-	int GameSize = 2;
+	int GameSize = 1;
 
 	Conways();
 	~Conways();
@@ -39,19 +39,23 @@ public:
 
 	struct Cell
 	{
-		sf::RectangleShape shape;
+		sf::VertexArray visual;
+		sf::Vector2f position;
 		std::vector<Cell*> neighbours = {};
 
 		bool isActive;
 		bool previouseActive;
 
 		Cell(float x, float y, sf::Vector2f size, sf::Color color) {
-			shape.setSize(size);
-			shape.setFillColor(color);
-			shape.setPosition(sf::Vector2f(x, y));
-			
+			position = {x,y};
+
+			//sf::VertexArray point(sf::PrimitiveType::Points, 1);
+			//point[0].position = position;
+			//point[0].color = sf::Color::White;
+			//visual = point;
+
 			isActive = false;
-			previouseActive = !isActive;
+			previouseActive = true;
 		}
 
 		operator bool() const
@@ -61,7 +65,9 @@ public:
 	};
 	std::unordered_map<std::pair<int, int>, Cell*, pair_hash> grid;
 	std::vector<Cell> cells;
+
 private:
+	sf::VertexArray visual;
 
 	int gs = GameSize;
 	std::vector<std::pair<int, int>> diractions = {

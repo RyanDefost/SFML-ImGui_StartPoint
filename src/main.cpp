@@ -10,7 +10,7 @@ Profiler profiler;
 
 int main() {
     sf::RenderWindow window;
-    window.create(sf::VideoMode({ 1280, 720 }), "My window");
+    window.create(sf::VideoMode({ 1580, 1000 }), "My window");
     //window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
 
@@ -36,7 +36,7 @@ int main() {
 
         //if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
         {
-            PROFILE(profiler, "Display Conways");
+            PROFILE(profiler, "Update Conways");
             conways.UpdateCells(window);
         }
 
