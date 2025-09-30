@@ -60,7 +60,7 @@ private:
 	std::vector<Ball> balls;
 	std::unordered_map<std::pair<int,int>, std::vector<Ball>, pair_hash> grid_m = {};
 
-	std::list<Ball> balls_m = {};
+	std::vector<Ball> balls_m = {};
 
 	// Random
 	std::random_device rd;
@@ -69,8 +69,6 @@ private:
 	std::uniform_real_distribution<float> velDist;
 	std::uniform_int_distribution<int> colorDist;
 	std::uniform_real_distribution<float> radiusDist;
-
-	
 
 public:
 

@@ -41,13 +41,10 @@ BallGame::~BallGame() {
 }
 
 void BallGame::UpdateBalls(const sf::Vector2u& windowSize, float deltaTime) {
-	for (auto& ball : balls_m) {
-		ball.shape.move(ball.velocity * deltaTime);
-	}
-
 	// Handle ball-to-ball collisions
 	for (auto& ball : balls_m) {
-		
+		ball.shape.move(ball.velocity * deltaTime);
+
 		HandleBallCollision(ball);
 		HandleWallCollision(ball, windowSize);
 
@@ -142,7 +139,9 @@ void BallGame::ReAssignBall(Ball& ball){
 	);
 
 	//Update it's current grid position
-	ball.position = { ball.shape.getPosition().x, ball.shape.getPosition().y };
+	auto ballPosition = ball.shape.getPosition();
+	ball.position = { ballPosition.x, ballPosition.y };
+
 	ball.gridPosition = {
 		std::floor(ball.position.first / gridSize),
 		std::floor(ball.position.second / gridSize),
