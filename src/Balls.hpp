@@ -2,13 +2,20 @@
 #include <vector>
 #include <random>
 #include <cmath>
+#include <unordered_set>
 #include <SFML/Graphics.hpp>
 
 struct Ball {
+	int index;
+	
 	sf::CircleShape shape;
 	sf::Vector2f velocity;
 
-	Ball(float x, float y, float radius, sf::Color color, float vx, float vy) {
+	std::pair<int, int> position;
+	std::pair<int, int> gridPosition;
+
+	Ball(float x, float y, float radius, sf::Color color, float vx, float vy, int index) {
+		this->index = index;
 
 		shape.setRadius(radius);
 		shape.setPosition(sf::Vector2f(x, y));
@@ -16,10 +23,24 @@ struct Ball {
 		shape.setOrigin(sf::Vector2f(radius, radius)); // Center origin
 		
 		velocity = sf::Vector2f(vx, vy);
+
+		gridPosition = {
+			std::floor(x / 25),
+			std::floor(y / 25)
+		};
+
+		position = { x,y };
+	}
+
+	bool operator==(const Ball& b) {
+		if (b.index == this->index) return true;
+		return false;
 	}
 };
 
-struct pair_hash { //Baum mit Augen: https://stackoverflow.com/questions/32685540/why-cant-i-compile-an-unordered-map-with-a-pair-as-key
+// Only for pairs of std::hash-able types for simplicity.
+// You can of course template this struct to allow other hash functions
+struct pair_hash {
 	template <class T1, class T2>
 	std::size_t operator () (const std::pair<T1, T2>& p) const {
 		auto h1 = std::hash<T1>{}(p.first);
@@ -33,9 +54,13 @@ struct pair_hash { //Baum mit Augen: https://stackoverflow.com/questions/3268554
 
 class BallGame {
 private:
+	int gridSize = 25;
+
 	// Create balls
 	std::vector<Ball> balls;
-	std::unordered_map<std::pair<int,int>, Ball> balls_m = {};
+	std::unordered_map<std::pair<int,int>, std::vector<Ball>, pair_hash> grid_m = {};
+
+	std::list<Ball> balls_m = {};
 
 	// Random
 	std::random_device rd;
@@ -44,6 +69,8 @@ private:
 	std::uniform_real_distribution<float> velDist;
 	std::uniform_int_distribution<int> colorDist;
 	std::uniform_real_distribution<float> radiusDist;
+
+	
 
 public:
 	BallGame();

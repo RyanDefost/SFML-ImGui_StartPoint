@@ -33,6 +33,7 @@ int main() {
         }
 
         // Update
+        //if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
         {
             PROFILE(profiler, "Update Balls");
             ballgame.UpdateBalls({ 500,720 }, deltaClock.getElapsedTime().asSeconds());
