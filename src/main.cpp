@@ -11,7 +11,7 @@ Profiler profiler;
 int main() {
     sf::RenderWindow window;
     window.create(sf::VideoMode({ 1280, 720 }), "My window");
-    window.setFramerateLimit(60);
+    //window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
 
     if (!ImGui::SFML::Init(window))
@@ -36,7 +36,7 @@ int main() {
 
         //if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
         {
-            //PROFILE(profiler, "Display Conways");
+            PROFILE(profiler, "Display Conways");
             conways.UpdateCells(window);
         }
 
@@ -45,7 +45,7 @@ int main() {
         
         profiler.renderImGui();
         {
-            PROFILE(profiler, "Render Conways");
+            //PROFILE(profiler, "Render Conways");
             conways.DisplayCells(window);
         }
         ImGui::SFML::Render(window);

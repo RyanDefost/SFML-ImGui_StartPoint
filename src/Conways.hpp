@@ -10,28 +10,17 @@
 #include <random>
 #include <ranges>
 
-/// <summary>
-/// Instantiate set amount of cells
-///	all all pos are done via ints so that is the grid system
-///		(rand pos is done is a set x, y range)
-/// 
-/// 
-/// </summary>
+// Only for pairs of std::hash-able types for simplicity.
+// You can of course template this struct to allow other hash functions
+struct pair_hash {
+	template <class T1, class T2>
+	std::size_t operator () (const std::pair<T1, T2>& p) const {
+		auto h1 = std::hash<T1>{}(p.first);
+		auto h2 = std::hash<T2>{}(p.second);
 
-template <>
-struct std::hash<std::pair<int, int>> // jogojapan : https://stackoverflow.com/questions/17016175/c-unordered-map-using-a-custom-class-type-as-the-key
-{
-	std::size_t operator()(const std::pair<int, int>& k) const
-	{
-		using std::size_t;
-		using std::hash;
-
-		// Compute individual hash values for first,
-		// second and third and combine them using XOR
-		// and bit shifting:
-
-		return (hash<int>()(k.first)
-			^ (hash<int>()(k.second)));
+		// Mainly for demonstration purposes, i.e. works but is overly simple
+		// In the real world, use sth. like boost.hash_combine
+		return h1 ^ h2;
 	}
 };
 
@@ -51,7 +40,7 @@ public:
 	struct Cell
 	{
 		sf::RectangleShape shape;
-		std::vector<std::pair<int,int>> neighbours = {};
+		std::vector<Cell*> neighbours = {};
 
 		bool isActive;
 		bool previouseActive;
@@ -70,8 +59,8 @@ public:
 			return isActive;
 		}
 	};
-
-	std::unordered_map<std::pair<int, int>, Cell> cells = {};
+	std::unordered_map<std::pair<int, int>, Cell*, pair_hash> grid;
+	std::vector<Cell> cells;
 private:
 
 	int gs = GameSize;

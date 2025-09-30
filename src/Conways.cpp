@@ -33,7 +33,10 @@ Conways::Conways()
 				currentCell.previouseActive = false;
 			}
 
-			cells.insert({ position, currentCell });
+			cells.emplace_back(currentCell);
+			
+			Cell& cell = cells.back();
+			grid.insert({ position, &cell});
 		}
 		
 	}
@@ -51,11 +54,11 @@ void Conways::GetNeighbours()
 	for (auto& cell : cells) {
 
 		for (auto& diraction : diractions) {
-			std::pair<int, int> currentDir = { cell.first.first + diraction.first, cell.first.second + diraction.second };
+			std::pair<int, int> currentDir = { cell.shape.getPosition().x + diraction.first, cell.shape.getPosition().y + diraction.second};
 
-			if (cells.find(currentDir) == cells.end()) continue;
+			if (grid.find(currentDir) == grid.end()) continue;
 
-			cell.second.neighbours.emplace_back(currentDir);
+			cell.neighbours.emplace_back(grid.at(currentDir));
 		}
 	}
 }
@@ -65,17 +68,17 @@ void Conways::UpdateCells(sf::RenderWindow& window)
 	for (auto& cell : cells) {
 
 		auto count = 0;
-		std::for_each(cell.second.neighbours.begin(), cell.second.neighbours.end(), [=, &count](std::pair<int,int>& p) {
-			if (cells.at(p).previouseActive) count++;
+		std::for_each(cell.neighbours.begin(), cell.neighbours.end(), [&count](Cell* c) {
+			if (c->previouseActive) count++;
 		});
 
-		if (!cell.second.previouseActive && count == 3) {
-			cell.second.isActive = true;
+		if (!cell.previouseActive && count == 3) {
+			cell.isActive = true;
 			continue;
 		}
 
 		if (count < 2 || count > 3) {
-			cell.second.isActive = false;
+			cell.isActive = false;
 			continue;
 		}
 	}
@@ -84,9 +87,9 @@ void Conways::UpdateCells(sf::RenderWindow& window)
 void Conways::DisplayCells(sf::RenderWindow& window)
 {
 	for (auto& cell : cells) {
-		cell.second.previouseActive = cell.second.isActive;
+		cell.previouseActive = cell.isActive;
 		
-		if (!cell.second) continue;
-		window.draw(cell.second.shape);
+		if (!cell) continue;
+		window.draw(cell.shape);
 	}
 }
