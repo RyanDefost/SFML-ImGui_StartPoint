@@ -12,33 +12,30 @@ Conways::Conways()
 	std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<float> random;
 
-	int Xsize = 1000;
-	int Ysize = 1000;
+	int gridSize = 1000;
 
-	cells.reserve(Xsize * Ysize);
-	grid.reserve(Xsize * Ysize);
+	cells.reserve(gridSize * gridSize);
+	grid.reserve(gridSize * gridSize);
 
-	for (int i = 0; i < Xsize; i++)
+	for (int i = 0; i < gridSize * gridSize; ++i) 
 	{
-		for (size_t j = 0; j < Ysize; j++)
-		{
-			std::pair<int, int> position = {
-				(int)i, (int)j
-			};
-			
-			Cell currentCell = Cell(position);
+		const int x = i % gridSize;				// Lucas (HyruleTrash): https://github.com/HyruleTrash/LowLevel-CompSci-Lucas/blob/Conway-Assignment/src/Texture.cpp
+		const int y = i / gridSize;				// Example for using modulus in Loop for grid.
 
-			random = std::uniform_real_distribution<float>(0, 2);
-			if (random(gen) < 1) {
-				currentCell.isActive = true;
-				currentCell.previouseActive = false;
-			}
+		std::pair<int, int> position = {x,y};
 
-			cells.emplace_back(currentCell);
-			
-			Cell& cell = cells.back();
-			grid.insert({ position, &cell});
+		Cell currentCell = Cell(position);
+
+		random = std::uniform_real_distribution<float>(0, 2);
+		if (random(gen) < 1) {
+			currentCell.isActive = true;
+			currentCell.previouseActive = false;
 		}
+
+		cells.emplace_back(currentCell);
+
+		Cell& cell = cells.back();
+		grid.insert({ position, &cell });
 	}
 
 	GetNeighbours();
@@ -79,7 +76,6 @@ void Conways::UpdateCells(sf::RenderWindow& window)
 				cell.isActive = false;
 				continue;
 			}
-			
 		}
 
 		if (!cell.previouseActive && count == 3) {
