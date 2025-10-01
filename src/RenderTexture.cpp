@@ -6,25 +6,36 @@
 RenderTexture::RenderTexture(unsigned int x, unsigned int y) {
 
 	if (!baseTexture.loadFromFile("../Assets/background.png")) {
-
 		std::cout << "Error loading texture" << std::endl;
 	}
-	baseTexture.resize({x, y});
-	currentState = baseTexture.copyToImage();
+
+	if (!baseTexture.resize({ x, y })) {
+		std::cout << "Error texture could not be re-sized" << std::endl;
+	}
+
+	ClearRenderState();
 }
 
 RenderTexture::~RenderTexture() {}
 
-void RenderTexture::SetPixel(unsigned int x, unsigned int y, sf::Color color) {
-	sf::Vector2u pos = {x, y};
+void RenderTexture::ClearRenderState()
+{
+	currentState = baseTexture.copyToImage();
+}
 
-	currentState.setPixel(pos, color);
+void RenderTexture::SetPixel(unsigned int x, unsigned int y, sf::Color color) {
+	
+	currentState.setPixel({ x, y }, color);
 }
 
 void RenderTexture::DisplayVisual(sf::RenderWindow& window) {
-	renderTexture.loadFromImage(currentState);
+
+	if (!renderTexture.loadFromImage(currentState)) {
+		std::cout << "Error texture could not be loaded from image" << std::endl;
+	}
 
 	sf::Sprite visual(renderTexture);
+	visual.setScale({textureScale, textureScale});
 	window.draw(visual);
 }
 

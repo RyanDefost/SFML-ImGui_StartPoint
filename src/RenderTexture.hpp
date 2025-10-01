@@ -6,14 +6,16 @@ public:
 	RenderTexture(unsigned int x, unsigned int y);
 	~RenderTexture();
 
+	void ClearRenderState();
+
 	void SetPixel(unsigned int x, unsigned int y, sf::Color color);
 
 	void DisplayVisual(sf::RenderWindow& window);
 private:
-
-	//sf::Sprite background;
-	sf::Image currentState;
+	float textureScale = 0.5;
 
 	sf::Texture baseTexture;
 	sf::Texture renderTexture;
+
+	sf::Image currentState;
 };

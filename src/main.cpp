@@ -18,13 +18,12 @@ int main() {
         return -1;
 
     Conways conways;
-    //conways.Setup(window);
 
     sf::Clock deltaClock;
     bool toggleTest = false;
     while (window.isOpen())
     {
-        // Event Polling
+        // Event Polling ----------
         while (const std::optional event = window.pollEvent())
         {
             ImGui::SFML::ProcessEvent(window, *event);
@@ -34,15 +33,15 @@ int main() {
                 window.close();
         }
 
+        // Update -----------------
         ImGui::SFML::Update(window, deltaClock.restart());
 
-        //if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
         {
             PROFILE(profiler, "Update Conways");
-            conways.UpdateCells(window);
+            conways.UpdateCells();
         }
 
-        // Render
+        // Render -----------------
         window.clear();
         
         profiler.renderImGui();

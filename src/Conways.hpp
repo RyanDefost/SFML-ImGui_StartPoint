@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include "RenderTexture.hpp"
 #include <unordered_map>
 #include <imgui.h>
 #include <imgui-SFML.h>
@@ -29,9 +30,6 @@ struct Cell
 	std::pair<int, int> position;
 	std::vector<Cell*> neighbours = {};
 
-	sf::VertexArray visual; // ADDING THESE ADDS +-10FPS !?
-	sf::VertexArray visual2; // WHY???
-
 	bool isActive;
 	bool previouseActive;
 
@@ -52,16 +50,19 @@ public:
 
 	void GetNeighbours();
 
-	void UpdateCells(sf::RenderWindow& window);
+	void UpdateCells();
 
 	void DisplayCells(sf::RenderWindow& window);
 
-	
 	std::unordered_map<std::pair<int, int>, Cell*, pair_hash> grid;
 	std::vector<Cell> cells;
 
 private:
-	std::vector<std::pair<int, int>> diractions = {
+	const unsigned int gridSize = 2000;
+
+	RenderTexture renderTexture{ gridSize, gridSize };
+
+	const std::vector<std::pair<int, int>> diractions = {
 		{0 , 1}, {1 , 0}, {0 , -1},
 		{-1, 0}, {1 , 1}, {-1, -1},
 		{1 ,-1}, {-1, 1}
