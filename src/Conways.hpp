@@ -12,7 +12,7 @@
 
 // Only for pairs of std::hash-able types for simplicity.
 // You can of course template this struct to allow other hash functions
-struct pair_hash {
+struct pair_hash { //Baum mit Augen: https://stackoverflow.com/questions/32685540/why-cant-i-compile-an-unordered-map-with-a-pair-as-key
 	template <class T1, class T2>
 	std::size_t operator () (const std::pair<T1, T2>& p) const {
 		auto h1 = std::hash<T1>{}(p.first);
@@ -24,10 +24,29 @@ struct pair_hash {
 	}
 };
 
+struct Cell
+{
+	std::pair<int, int> position;
+	std::vector<Cell*> neighbours = {};
+
+	sf::VertexArray visual; // ADDING THESE ADDS +-10FPS !?
+	sf::VertexArray visual2; // WHY???
+
+	bool isActive;
+	bool previouseActive;
+
+	Cell(std::pair<int, int> pos) {
+		position = pos;
+
+		isActive = false;
+		previouseActive = true;
+	}
+
+	operator bool() const { return isActive; }
+};
+
 class Conways {
 public:
-	int GameSize = 1;
-
 	Conways();
 	~Conways();
 
@@ -37,44 +56,14 @@ public:
 
 	void DisplayCells(sf::RenderWindow& window);
 
-	struct Cell
-	{
-		sf::Texture displayTexture;
-
-		sf::VertexArray visual;
-		sf::Vector2f position;
-		std::vector<Cell*> neighbours = {};
-
-		bool isActive;
-		bool previouseActive;
-
-		Cell(float x, float y, sf::Vector2f size, sf::Color color) {
-			position = {x,y};
-
-			//sf::VertexArray point(sf::PrimitiveType::Points, 1);
-			//point[0].position = position;
-			//point[0].color = sf::Color::White;
-			//visual = point;
-
-			isActive = false;
-			previouseActive = true;
-		}
-
-		operator bool() const
-		{
-			return isActive;
-		}
-	};
+	
 	std::unordered_map<std::pair<int, int>, Cell*, pair_hash> grid;
 	std::vector<Cell> cells;
 
 private:
-	//RenderTexture renderTexture = RenderTexture{100,100};
-
-	int gs = GameSize;
 	std::vector<std::pair<int, int>> diractions = {
-		{0, gs}, {gs, 0}, {0, -gs},
-		{-gs, 0}, {gs, gs}, {-gs, -gs},
-		{gs, -gs}, {-gs, gs}
+		{0 , 1}, {1 , 0}, {0 , -1},
+		{-1, 0}, {1 , 1}, {-1, -1},
+		{1 ,-1}, {-1, 1}
 	};
 };

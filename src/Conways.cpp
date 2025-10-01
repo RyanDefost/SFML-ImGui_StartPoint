@@ -23,15 +23,10 @@ Conways::Conways()
 		for (size_t j = 0; j < Ysize; j++)
 		{
 			std::pair<int, int> position = {
-				(int)i * GameSize, (int)j * GameSize 
+				(int)i, (int)j
 			};
 			
-			Cell currentCell = Cell(
-				position.first,
-				position.second,
-				sf::Vector2f(GameSize, GameSize),
-				sf::Color::White
-			);
+			Cell currentCell = Cell(position);
 
 			random = std::uniform_real_distribution<float>(0, 2);
 			if (random(gen) < 1) {
@@ -62,8 +57,8 @@ void Conways::GetNeighbours()
 		for (auto& diraction : diractions) {
 			
 			std::pair<int, int> currentDir = {
-				cell.position.x + diraction.first, 
-				cell.position.y + diraction.second
+				cell.position.first + diraction.first, 
+				cell.position.second + diraction.second
 			};
 
 			if (grid.find(currentDir) == grid.end()) continue;
@@ -106,7 +101,7 @@ void Conways::DisplayCells(sf::RenderWindow& window)
 		cell.previouseActive = cell.isActive;
 		
 		if (!cell) continue;
-		renderTexture.SetPixel(cell.position.x, cell.position.y, sf::Color::White);
+		renderTexture.SetPixel(cell.position.first, cell.position.second, sf::Color::White);
 	}
 
 	renderTexture.DisplayVisual(window);
