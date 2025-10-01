@@ -3,6 +3,7 @@
 #include <numeric>
 #include <unordered_map>
 #include "Conways.hpp"
+#include "RenderTexture.hpp"
 #include <iostream>
 
 Conways::Conways()
@@ -16,12 +17,15 @@ Conways::Conways()
 	std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<float> random;
 
-	cells.reserve(500 * 500);
-	grid.reserve(500 * 500);
+	int Xsize = 1000;
+	int Ysize = 1000;
 
-	for (int i = 0; i < 500; i++)
+	cells.reserve(Xsize * Ysize);
+	grid.reserve(Xsize * Ysize);
+
+	for (int i = 0; i < Xsize; i++)
 	{
-		for (size_t j = 0; j < 500; j++)
+		for (size_t j = 0; j < Ysize; j++)
 		{
 			std::pair<int, int> position = {
 				(int)i * GameSize, (int)j * GameSize 
@@ -101,12 +105,36 @@ void Conways::UpdateCells(sf::RenderWindow& window)
 
 void Conways::DisplayCells(sf::RenderWindow& window)
 {
+	//RenderTexture renderTexture(500, 500);
+	sf::Texture baseTexture;
+	sf::Texture newText;
+
+	if (!baseTexture.loadFromFile("../Assets/background.png")) {
+
+		std::cout << "Error loading texture" << std::endl;
+	}
+	baseTexture.resize({ 1000,1000 });
+
+	sf::Image image = baseTexture.copyToImage();
+	
 	for (auto& cell : cells) {
 		cell.previouseActive = cell.isActive;
 		
 		if (!cell) continue;
 
 		visual[0].position = cell.position;
-		window.draw(visual);
+		
+		//-----------------
+
+		sf::Vector2u test = { (unsigned int)cell.position.x, (unsigned int)cell.position.y };
+
+		image.setPixel(test, sf::Color::White);
+		//renderTexture.SetPixel(cell.position.x, cell.position.y, sf::Color::White);
 	}
+	newText.loadFromImage(image);
+
+	//auto test = renderTexture.GetTexture();
+	sf::Sprite background(newText);
+	
+	window.draw(background);
 }

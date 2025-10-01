@@ -1,6 +1,6 @@
 add_executable(low-level_setup
  main.cpp
- "Profiler.hpp"  "Conways.cpp")
+ "Profiler.hpp"  "Conways.cpp" "RenderTexture.cpp" "background.png")
 
 target_link_libraries(low-level_setup
  PUBLIC

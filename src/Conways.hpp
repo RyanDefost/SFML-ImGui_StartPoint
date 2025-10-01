@@ -39,6 +39,8 @@ public:
 
 	struct Cell
 	{
+		sf::Texture displayTexture;
+
 		sf::VertexArray visual;
 		sf::Vector2f position;
 		std::vector<Cell*> neighbours = {};
