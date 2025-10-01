@@ -3,26 +3,30 @@
 #include "RenderTexture.hpp"
 
 
-RenderTexture::RenderTexture(int x, int y) {
+RenderTexture::RenderTexture(unsigned int x, unsigned int y) {
 
 	if (!baseTexture.loadFromFile("../Assets/background.png")) {
 
 		std::cout << "Error loading texture" << std::endl;
 	}
 	baseTexture.resize({ x,y });
+	currentState = baseTexture.copyToImage();
 }
 
 RenderTexture::~RenderTexture() {}
 
 void RenderTexture::SetPixel(unsigned int x, unsigned int y, sf::Color color) {
-	sf::Image image = baseTexture.copyToImage();
+	sf::Vector2u pos = {
+		(unsigned int)x,
+		(unsigned int)y };
 
-	sf::Vector2u test = { x,y };
-	image.setPixel(test, color);
-	renderTexture.loadFromImage(image);
+	currentState.setPixel(pos, color);
 }
 
-sf::Texture RenderTexture::GetTexture() {
-	return renderTexture;
+void RenderTexture::DisplayVisual(sf::RenderWindow& window) {
+	renderTexture.loadFromImage(currentState);
+
+	sf::Sprite visual(renderTexture);
+	window.draw(visual);
 }
 

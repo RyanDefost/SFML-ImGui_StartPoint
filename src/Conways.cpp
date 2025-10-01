@@ -8,11 +8,6 @@
 
 Conways::Conways()
 {
-	sf::VertexArray point(sf::PrimitiveType::Points, 1);
-	point[0].position = { 0,0 };
-	point[0].color = sf::Color::White;
-	visual = point;
-
 	std::random_device rd;  // Will be used to obtain a seed for the random number engine
 	std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<float> random;
@@ -105,36 +100,14 @@ void Conways::UpdateCells(sf::RenderWindow& window)
 
 void Conways::DisplayCells(sf::RenderWindow& window)
 {
-	//RenderTexture renderTexture(500, 500);
-	sf::Texture baseTexture;
-	sf::Texture newText;
+	RenderTexture renderTexture{ 1000,1000 };
 
-	if (!baseTexture.loadFromFile("../Assets/background.png")) {
-
-		std::cout << "Error loading texture" << std::endl;
-	}
-	baseTexture.resize({ 1000,1000 });
-
-	sf::Image image = baseTexture.copyToImage();
-	
 	for (auto& cell : cells) {
 		cell.previouseActive = cell.isActive;
 		
 		if (!cell) continue;
-
-		visual[0].position = cell.position;
-		
-		//-----------------
-
-		sf::Vector2u test = { (unsigned int)cell.position.x, (unsigned int)cell.position.y };
-
-		image.setPixel(test, sf::Color::White);
-		//renderTexture.SetPixel(cell.position.x, cell.position.y, sf::Color::White);
+		renderTexture.SetPixel(cell.position.x, cell.position.y, sf::Color::White);
 	}
-	newText.loadFromImage(image);
 
-	//auto test = renderTexture.GetTexture();
-	sf::Sprite background(newText);
-	
-	window.draw(background);
+	renderTexture.DisplayVisual(window);
 }

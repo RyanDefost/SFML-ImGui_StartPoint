@@ -69,7 +69,7 @@ public:
 	std::vector<Cell> cells;
 
 private:
-	sf::VertexArray visual;
+	//RenderTexture renderTexture = RenderTexture{100,100};
 
 	int gs = GameSize;
 	std::vector<std::pair<int, int>> diractions = {

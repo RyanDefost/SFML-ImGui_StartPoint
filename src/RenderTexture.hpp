@@ -3,15 +3,17 @@
 class RenderTexture {
 
 public:
-	RenderTexture(int x, int y);
+	RenderTexture(unsigned int x, unsigned int y);
 	~RenderTexture();
 
 	void SetPixel(unsigned int x, unsigned int y, sf::Color color);
 
-	sf::Texture GetTexture();
+	void DisplayVisual(sf::RenderWindow& window);
 private:
 
 	//sf::Sprite background;
+	sf::Image currentState;
+
 	sf::Texture baseTexture;
 	sf::Texture renderTexture;
 };
