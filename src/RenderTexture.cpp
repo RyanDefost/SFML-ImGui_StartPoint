@@ -9,16 +9,14 @@ RenderTexture::RenderTexture(unsigned int x, unsigned int y) {
 
 		std::cout << "Error loading texture" << std::endl;
 	}
-	baseTexture.resize({ x,y });
+	baseTexture.resize({x, y});
 	currentState = baseTexture.copyToImage();
 }
 
 RenderTexture::~RenderTexture() {}
 
 void RenderTexture::SetPixel(unsigned int x, unsigned int y, sf::Color color) {
-	sf::Vector2u pos = {
-		(unsigned int)x,
-		(unsigned int)y };
+	sf::Vector2u pos = {x, y};
 
 	currentState.setPixel(pos, color);
 }

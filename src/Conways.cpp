@@ -39,7 +39,6 @@ Conways::Conways()
 			Cell& cell = cells.back();
 			grid.insert({ position, &cell});
 		}
-		
 	}
 
 	GetNeighbours();
@@ -80,6 +79,7 @@ void Conways::UpdateCells(sf::RenderWindow& window)
 				cell.isActive = false;
 				continue;
 			}
+			
 		}
 
 		if (!cell.previouseActive && count == 3) {
