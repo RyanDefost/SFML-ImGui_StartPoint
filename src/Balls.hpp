@@ -81,7 +81,7 @@ public:
 	void HandleBallCollision(Ball& ball);
 	void HandleWallCollision(Ball& ball, const sf::Vector2u& windowSize);
 
-	void ReAssignBall(Ball& ball);
+	void ReAssignBalls();
 
 	void DrawBalls(sf::RenderWindow& window) const;
 };

@@ -9,7 +9,7 @@ BallGame::BallGame() {
 	radiusDist = std::uniform_real_distribution<float>(2.5f, 2.5f);
 
 	// Generate random balls
-	for (int i = 0; i < 2500; ++i) {
+	for (int i = 0; i < 5000; ++i) {
 		sf::Color randomColor(colorDist(gen), colorDist(gen), colorDist(gen));
 
 		Ball currentBall = {
@@ -44,12 +44,11 @@ void BallGame::UpdateBalls(const sf::Vector2u& windowSize, float deltaTime) {
 	// Handle ball-to-ball collisions
 	for (auto& ball : balls_m) {
 		ball.shape.move(ball.velocity * deltaTime);
-
 		HandleBallCollision(ball);
 		HandleWallCollision(ball, windowSize);
-
-		ReAssignBall(ball);
 	}
+
+	ReAssignBalls();
 }
 
 void BallGame::HandleBallCollision(Ball& cball) {
@@ -131,29 +130,22 @@ void BallGame::HandleWallCollision(Ball& ball, const sf::Vector2u& windowSize) {
 	}
 }
 
-void BallGame::ReAssignBall(Ball& ball){
+void BallGame::ReAssignBalls(){
 
-	auto& gridBalls = grid_m.at(ball.gridPosition);
-	gridBalls.erase(
-		remove( gridBalls.begin(), gridBalls.end(), ball), gridBalls.end()
-	);
+	grid_m.clear();
+	for (auto& ball : balls_m) {
+		std::pair<int, int> currentGridPosition = {
+			std::floor(ball.position.first / gridSize),
+			std::floor(ball.position.second / gridSize)
+		};
 
-	//Update it's current grid position
-	auto ballPosition = ball.shape.getPosition();
-	ball.position = { ballPosition.x, ballPosition.y };
-
-	ball.gridPosition = {
-		std::floor(ball.position.first / gridSize),
-		std::floor(ball.position.second / gridSize),
-	};
-
-
-	auto findit = grid_m.find(ball.gridPosition);
-	if (findit != grid_m.end()) {
-		grid_m.at(ball.gridPosition).emplace_back(ball);
-	}
-	else {
-		grid_m.insert({ ball.gridPosition, {ball} });
+		auto findit = grid_m.find(currentGridPosition);
+		if (findit != grid_m.end()) {
+			grid_m.at(currentGridPosition).emplace_back(ball);
+		}
+		else {
+			grid_m.insert({ currentGridPosition, {ball} });
+		}
 	}
 }
 
