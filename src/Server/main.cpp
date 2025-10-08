@@ -1,5 +1,5 @@
 #include <iostream>
-#include "ChatServer.hpp"
+//#include "ChatServer.hpp"
 
 int main() {
 	std::cout << "1Server";

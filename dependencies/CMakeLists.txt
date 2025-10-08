@@ -30,6 +30,16 @@ FetchContent_Declare(
   GIT_TAG        v3.0
 )
 
+FetchContent_Declare( zeromq
+	GIT_REPOSITORY https://github.com/zeromq/libzmq.git
+	GIT_TAG        v4.3.2
+) 
+FetchContent_Declare( cppzmq
+	GIT_REPOSITORY https://github.com/zeromq/cppzmq.git
+	GIT_TAG        v4.11.0 
+) 
+FetchContent_MakeAvailable(zeromq cppzmq)
+
 # BUILDING
 
 # SFML

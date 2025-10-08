@@ -1,10 +1,10 @@
 #include <iostream>
-#include "ChatClient.hpp"
+//#include "ChatClient.hpp"
 
 int main() {
-	ChatClient client;
+	//ChatClient client;
 
-	client.connect_to_server();
+	//client.connect_to_server();
 
 	std::cout << "Client";
 }
