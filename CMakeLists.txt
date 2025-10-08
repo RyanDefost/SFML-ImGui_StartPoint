@@ -6,4 +6,5 @@ project(low-level_setup
 )
 
 add_subdirectory(dependencies)
-add_subdirectory(src)
+add_subdirectory(src/Client)
+add_subdirectory(src/Server)

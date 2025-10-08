@@ -24,16 +24,19 @@ private:
 	char target_buffer[64] = "";
 	char message_buffer[256] = "";
 	char server_buffer[128] = "tcp://localhost:5555";
+
 public:
 	ChatClient() : context(1), socket(context, zmq::socket_type::dealer) {
 		socket.set(zmq::sockopt::linger, 0);
 	}
+
 	~ChatClient() {
 		running = false;
 		if (receive_thread.joinable()) {
 			receive_thread.join();
 		}
 	}
+
 	void connect_to_server() {
 		try {
 			socket.connect(server_buffer);
@@ -48,6 +51,7 @@ public:
 			add_message("Connection failed: " + std::string(e.what()));
 		}
 	}
+
 	void disconnect() {
 		running = false;
 		connected = false;
@@ -58,17 +62,23 @@ public:
 		}
 		add_message("Disconnected from server.");
 	}
+
 	void set_username() {
 	}
+
 	void send_private_message() {
 	}
+
 	void send_public_message() {
 	}
+
 	void send_leave_message() {
 	}
+	
 	void leave() {
 		send_leave_message();
 	}
+	
 	void render_gui() {
 		// Connection panel
 		ImGui::Begin("Chat Client");
@@ -121,13 +131,16 @@ private:
 	void send_message(const std::string& msg_type) {
 		// TODO: Create multipart_t zmq message, add type, send
 	}
+	
 	void send_message(const std::string& msg_type, const std::string& data) {
 		// TODO: Create multipart_t zmq message, add type & data, send
 	}
+	
 	void send_message(const std::string& msg_type, const std::string& data1, const
 		std::string& data2) {
 		// TODO: Create multipart_t zmq message, add type & data1 & data2, send
 	}
+	
 	void receive_loop() {
 		while (running) {
 			try {
@@ -145,6 +158,7 @@ private:
 			}
 		}
 	}
+	
 	void handle_server_message(zmq::multipart_t& msg) {
 		if (msg.size() < 1) return;
 		std::string msg_type = msg[0].to_string();
@@ -165,6 +179,7 @@ private:
 		// TIP: you can read the data out of a msg by msg[1], msg[2], etc., and
 		//check the number of parts of the message with msg.size()
 	}
+	
 	void add_message(const std::string& message) {
 		messages.push_back(message);
 		if (messages.size() > 100) { // Limit message history
