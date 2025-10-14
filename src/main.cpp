@@ -4,20 +4,22 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Profiler.hpp"
-#include "Balls.hpp"
+#include "Particles.hpp"
 
 Profiler profiler;
 
 int main() {
     sf::RenderWindow window;
     window.create(sf::VideoMode({ 1280, 720 }), "My window");
-    window.setFramerateLimit(60);
+    //window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
 
     if (!ImGui::SFML::Init(window))
         return -1;
 
-    BallGame ballgame;
+    auto system = ParticleSystem{&window};
+    system.spawnParticles(100, sf::Vector2f(250,250));
+
     sf::Clock deltaClock;
     bool toggleTest = false;
     while (window.isOpen())
@@ -32,24 +34,16 @@ int main() {
                 window.close();
         }
 
-        // Update
-        {
-            PROFILE(profiler, "Update Balls");
-            ballgame.NewUpdateBalls({ 500,720 }, deltaClock.getElapsedTime().asSeconds());
-        }
-
         ImGui::SFML::Update(window, deltaClock.restart());
-
+        system.update(deltaClock.getElapsedTime().asSeconds());
 
         profiler.renderImGui();
-
-        //ImGui::ShowDemoWindow();
 
         // Render
         window.clear();
 
         ImGui::SFML::Render(window);
-        ballgame.drawBalls(window);
+        system.render();
 
         window.display();
     }
